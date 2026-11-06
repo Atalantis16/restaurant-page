@@ -7,8 +7,9 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23c0442c'/%3E%3Cpath d='M10 8v16M16 8v16M22 8v16M8 12h16' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
   :root{
-    --bg:#faf7f2;--card:#ffffff;--ink:#2b2622;--ink-dim:#8a8178;
-    --brand:#c0442c;--gold:#b8862f;--line:rgba(43,38,34,.09);
+    --bg:#f7f4ee;--card:#ffffff;--ink:#2b2622;--ink-dim:#8a8178;
+    --brand:#c0442c;--brand-soft:#f7e9e4;--gold:#b8862f;--line:rgba(43,38,34,.09);
+    --shadow:0 8px 28px rgba(43,38,34,.07);
     --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
   }
   *{box-sizing:border-box;}
@@ -16,82 +17,123 @@
   body{font-family:var(--sans);color:var(--ink);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased;}
   img{display:block;max-width:100%;}
   .wrap{max-width:960px;margin:0 auto;background:var(--card);box-shadow:0 0 40px rgba(43,38,34,.06);}
-  .hero{position:relative;min-height:300px;display:flex;align-items:flex-end;overflow:hidden;}
-  .hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
-  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(20,14,10,.05) 30%,rgba(20,14,10,.78) 100%);}
-  .hero-inner{position:relative;z-index:2;padding:28px 22px 26px;color:#fff;width:100%;}
-  .hero .tag{display:inline-block;font-size:12.5px;letter-spacing:1px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:4px 11px;border-radius:20px;margin-bottom:12px;}
-  .hero h1{margin:0;font-size:30px;line-height:1.2;font-weight:800;}
-  .hero p{margin:8px 0 0;font-size:14.5px;color:rgba(255,255,255,.9);}
-  section{padding:30px 22px;}
+
+  /* ===== 轮播 ===== */
+  .carousel{position:relative;overflow:hidden;background:#1c1713;}
+  .track{display:flex;transition:transform .6s cubic-bezier(.22,.61,.36,1);}
+  .slide{position:relative;flex:0 0 100%;min-height:300px;}
+  .slide img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+  .carousel::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(20,14,10,.08) 25%,rgba(20,14,10,.8) 100%);z-index:1;}
+  .hero-text{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:26px 22px 30px;color:#fff;}
+  .hero-text .tag{display:inline-block;font-size:12.5px;letter-spacing:.5px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:4px 11px;border-radius:20px;margin-bottom:11px;}
+  .hero-text h1{margin:0;font-size:30px;line-height:1.18;font-weight:800;}
+  .hero-text p{margin:8px 0 0;font-size:14.5px;color:rgba(255,255,255,.92);}
+  .navbtn{position:absolute;top:42%;z-index:4;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;background:rgba(0,0,0,.32);color:#fff;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
+  .navbtn:active{background:rgba(0,0,0,.5);}
+  .navbtn.prev{left:12px;}.navbtn.next{right:12px;}
+  .dots{position:absolute;z-index:4;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:7px;}
+  .dots button{width:7px;height:7px;border-radius:50%;border:none;padding:0;cursor:pointer;background:rgba(255,255,255,.45);transition:width .3s;}
+  .dots button.active{width:20px;border-radius:4px;background:#fff;}
+
+  section{padding:30px 20px;}
   .sec-head{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
-  .sec-head svg{flex:none;}
-  .sec-head h2{margin:0;font-size:20px;font-weight:800;}
+  .sec-head h2{margin:0;font-size:19px;font-weight:800;}
   .sec-head .rule{flex:1;height:1px;background:var(--line);}
-  .promo{border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:14px;background:linear-gradient(135deg,#fff8f0,#fff);}
-  .promo .badge{display:inline-block;background:var(--brand);color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;margin-bottom:10px;}
-  .promo h3{margin:0 0 6px;font-size:17px;}
-  .promo p{margin:0;font-size:14px;color:var(--ink-dim);}
-  .promo .valid{margin-top:10px;font-size:12.5px;color:var(--gold);font-weight:600;}
-  .dishes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
-  .dish{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;}
+
+  /* ===== 活动 ===== */
+  .promo{border:1px solid var(--line);border-radius:14px;padding:17px 18px;margin-bottom:13px;background:linear-gradient(135deg,#fff9f2,#fff);transition:transform .25s,box-shadow .25s;}
+  .promo:active{transform:scale(.99);}
+  .promo .badge{display:inline-block;background:var(--brand);color:#fff;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;margin-bottom:9px;}
+  .promo h3{margin:0 0 5px;font-size:16.5px;}
+  .promo p{margin:0;font-size:13.5px;color:var(--ink-dim);}
+  .promo .valid{margin-top:9px;font-size:12.5px;color:var(--gold);font-weight:600;}
+
+  /* ===== 分类标签 ===== */
+  .tabs{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;scrollbar-width:none;}
+  .tabs::-webkit-scrollbar{display:none;}
+  .tabs button{flex:none;border:1px solid var(--line);background:#fff;color:var(--ink-dim);font-size:14px;font-weight:600;padding:7px 16px;border-radius:20px;cursor:pointer;}
+  .tabs button.active{background:var(--brand);border-color:var(--brand);color:#fff;}
+
+  .dishes{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;}
+  .dish{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#fff;transition:transform .25s,box-shadow .25s;}
+  .dish:active{transform:translateY(2px);}
   .dish .ph{position:relative;aspect-ratio:1/1;}
   .dish .ph img{width:100%;height:100%;object-fit:cover;}
-  .dish .info{padding:11px 12px 13px;}
-  .dish h4{margin:0 0 3px;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .dish .info{padding:10px 12px 12px;}
+  .dish h4{margin:0 0 2px;font-size:15px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .dish .desc{margin:0;font-size:12.5px;color:var(--ink-dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .dish .price{margin-top:7px;font-size:16px;font-weight:800;color:var(--brand);}
+  .dish .price{margin-top:6px;font-size:16px;font-weight:800;color:var(--brand);}
   .dish .price small{font-size:11px;font-weight:400;color:var(--ink-dim);}
+  .empty{grid-column:1/-1;text-align:center;color:var(--ink-dim);font-size:14px;padding:30px 0;}
+
+  /* ===== 门店 ===== */
   .info-list{display:grid;gap:14px;}
   .info-item{display:flex;gap:12px;align-items:flex-start;}
   .info-item svg{flex:none;margin-top:2px;}
   .info-item .k{font-size:13px;color:var(--ink-dim);margin-bottom:2px;}
   .info-item .v{font-size:15px;word-break:break-all;}
   .info-item a{color:var(--brand);text-decoration:none;font-weight:600;}
-  .qr-box{border:1px solid var(--line);border-radius:16px;padding:24px 18px;text-align:center;background:linear-gradient(180deg,#fff,#fcfaf6);}
-  #qrcode{display:inline-block;padding:12px;background:#fff;border:1px solid var(--line);border-radius:12px;}
-  #qrcode img,#qrcode canvas{border-radius:6px;}
-  .qr-tip{margin:14px 0 4px;font-size:14px;font-weight:700;}
-  .qr-sub{font-size:12.5px;color:var(--ink-dim);margin:0 0 16px;}
-  .qr-url{width:100%;max-width:340px;font-size:16px;padding:10px 12px;border:1px solid var(--line);border-radius:9px;margin:0 auto 14px;display:block;}
-  .qr-url:focus{outline:2px solid var(--brand);border-color:var(--brand);}
-  .btn{display:inline-flex;align-items:center;gap:7px;border:none;background:var(--brand);color:#fff;font-size:14px;font-weight:600;padding:11px 20px;border-radius:9px;cursor:pointer;text-decoration:none;}
-  .btn:active{transform:translateY(1px);}
-  .btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px;}
-  footer{padding:24px 22px 30px;text-align:center;font-size:12px;color:var(--ink-dim);border-top:1px solid var(--line);}
+
+  /* ===== 弱化二维码 ===== */
+  .qr-mini{display:flex;align-items:center;gap:16px;justify-content:center;border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fbf9f5;}
+  .qr-mini .q{width:96px;height:96px;flex:none;padding:7px;background:#fff;border:1px solid var(--line);border-radius:10px;}
+  .qr-mini .q img,.qr-mini .q canvas{width:100%!important;height:100%!important;border-radius:5px;}
+  .qr-mini .qt .t1{font-size:14px;font-weight:700;margin:0 0 3px;}
+  .qr-mini .qt .t2{font-size:12px;color:var(--ink-dim);margin:0 0 6px;}
+  .qr-mini .qt a{font-size:12.5px;color:var(--brand);text-decoration:none;font-weight:600;}
+
+  footer{padding:20px 22px 28px;text-align:center;font-size:12px;color:var(--ink-dim);border-top:1px solid var(--line);}
+
   @media (min-width:768px){
-    .hero{min-height:420px;}.hero h1{font-size:40px;}
+    .slide{min-height:430px;}
+    .hero-text{padding:40px;}
+    .hero-text h1{font-size:40px;}
     section{padding:40px;}
     .dishes{grid-template-columns:repeat(4,1fr);gap:18px;}
     .info-list{grid-template-columns:repeat(3,1fr);gap:20px;}
-    .hero-inner{padding:40px;}
+    .promo:hover,.dish:hover{box-shadow:var(--shadow);transform:translateY(-2px);}
+    .qr-mini{max-width:520px;margin:0 auto;}
   }
-  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+  @media (prefers-reduced-motion:reduce){
+    .track{transition:none;}
+    .promo,.dish{transition:none;}
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header class="hero">
-    <img id="heroImg" src="" alt="店铺环境">
-    <div class="hero-inner">
+
+  <!-- ===== 轮播 ===== -->
+  <div class="carousel" id="carousel">
+    <div class="track" id="track">
+      <div class="slide"><img src="assets/hero.jpg" alt="店铺主视觉"></div>
+    </div>
+    <div class="hero-text">
       <span class="tag" id="brandBadge"></span>
       <h1 id="brandName"></h1>
       <p id="brandSlogan"></p>
     </div>
-  </header>
+    <button class="navbtn prev" aria-label="上一张"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="navbtn next" aria-label="下一张"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="dots" id="dots"></div>
+  </div>
 
+  <!-- ===== 活动 ===== -->
   <section aria-label="最新活动">
-    <div class="sec-head"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14M12 7c-2.5 0-4-1.5-4-3s1.5 0 4 3zm0 0c2.5 0 4-1.5 4-3s-1.5 0-4 3z" stroke="#c0442c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h2>最新活动</h2><span class="rule"></span></div>
+    <div class="sec-head"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 12v9H4v-9M2 7h20v5H2zM12 7v14M12 7c-2.5 0-4-1.5-4-3s1.5 0 4 3zm0 0c2.5 0 4-1.5 4-3s-1.5 0-4 3z" stroke="#c0442c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h2>最新活动</h2><span class="rule"></span></div>
     <div id="promos"></div>
   </section>
 
-  <section aria-label="招牌菜品" style="background:#fcfaf6;">
-    <div class="sec-head"><svg width="22" height="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h16v6H4zM4 10v10h16V10M8 14h8" stroke="#c0442c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h2>招牌菜品</h2><span class="rule"></span></div>
+  <!-- ===== 菜品 ===== -->
+  <section aria-label="招牌菜品" style="background:#fbf9f5;">
+    <div class="sec-head"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 4h16v6H4zM4 10v10h16V10M8 14h8" stroke="#c0442c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h2>招牌菜品</h2><span class="rule"></span></div>
+    <div class="tabs" id="tabs"></div>
     <div class="dishes" id="dishes"></div>
   </section>
 
+  <!-- ===== 门店 ===== -->
   <section aria-label="门店信息">
-    <div class="sec-head"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z" stroke="#c0442c" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="9" r="2.5" stroke="#c0442c" stroke-width="1.8"/></svg><h2>门店信息</h2><span class="rule"></span></div>
+    <div class="sec-head"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z" stroke="#c0442c" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="9" r="2.5" stroke="#c0442c" stroke-width="1.8"/></svg><h2>门店信息</h2><span class="rule"></span></div>
     <div class="info-list">
       <div class="info-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s7-6.5 7-12a7 7 0 10-14 0c0 5.5 7 12 7 12z" stroke="#c0442c" stroke-width="1.8"/><circle cx="12" cy="9" r="2.5" stroke="#c0442c" stroke-width="1.8"/></svg><div><div class="k">门店地址</div><div class="v" id="storeAddress"></div></div></div>
       <div class="info-item"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2z" stroke="#c0442c" stroke-width="1.8" stroke-linejoin="round"/></svg><div><div class="k">联系电话</div><div class="v"><a id="storePhone" href="#"></a></div></div></div>
@@ -99,14 +141,15 @@
     </div>
   </section>
 
-  <section aria-label="二维码" style="background:#fcfaf6;">
-    <div class="sec-head"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1" stroke="#c0442c" stroke-width="1.8"/><rect x="14" y="3" width="7" height="7" rx="1" stroke="#c0442c" stroke-width="1.8"/><rect x="3" y="14" width="7" height="7" rx="1" stroke="#c0442c" stroke-width="1.8"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v1" stroke="#c0442c" stroke-width="1.8" stroke-linecap="round"/></svg><h2>扫码访问</h2><span class="rule"></span></div>
-    <div class="qr-box">
-      <div id="qrcode"><span style="font-size:13px;color:#b8862f">二维码加载中…</span></div>
-      <p class="qr-tip">手机长按 / 电脑右键二维码即可保存图片</p>
-      <p class="qr-sub">打印张贴或转发，顾客扫码即可打开本页</p>
-      <input class="qr-url" id="qrUrl" type="text" inputmode="url" aria-label="二维码指向链接">
-      <a class="btn" id="qrDownload" href="#" download="店铺二维码.png"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 21h16" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>下载二维码</a>
+  <!-- ===== 弱化二维码 ===== -->
+  <section aria-label="扫码" style="background:#fbf9f5;padding-top:8px;">
+    <div class="qr-mini">
+      <div class="q" id="qrcode"></div>
+      <div class="qt">
+        <p class="t1">扫码随时查看</p>
+        <p class="t2">手机长按二维码可保存图片</p>
+        <a href="#" id="qrDownload" download="店铺二维码.png">下载二维码</a>
+      </div>
     </div>
   </section>
 
@@ -117,60 +160,90 @@
 <script src="https://fastly.jsdelivr.net/gh/davidshimjs/qrcodejs@master/qrcode.min.js"></script>
 <script>
 (function(){
-  function el(id){return document.getElementById(id);}
-  var d = SITE_DATA;
+  var d = SITE_DATA, reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.title = d.brand.name + " · 最新活动与招牌菜品";
 
-  el("heroImg").src = d.brand.heroImage;
-  el("brandBadge").textContent = d.brand.badge;
-  el("brandName").textContent = d.brand.name;
-  el("brandSlogan").textContent = d.brand.slogan;
+  /* ===== 轮播 ===== */
+  var track=document.getElementById("track"), firstSlide=track.querySelector(".slide");
+  var imgs=d.brand.heroImages||[];
+  imgs.forEach(function(src,i){
+    if(i===0){firstSlide.querySelector("img").src=src;firstSlide.querySelector("img").alt=d.brand.name;return;}
+    var s=document.createElement("div");s.className="slide";
+    var im=document.createElement("img");im.src=src;im.alt="店铺环境 "+(i+1);s.appendChild(im);track.appendChild(s);
+  });
+  var slides=track.querySelectorAll(".slide"), N=slides.length, idx=0;
+  var dots=document.getElementById("dots");
+  slides.forEach(function(_,i){var b=document.createElement("button");b.setAttribute("aria-label","第"+(i+1)+"张");b.addEventListener("click",function(){go(i);});dots.appendChild(b);});
+  function go(n){idx=(n+N)%N;track.style.transform="translateX(-"+(idx*100)+"%)";dots.querySelectorAll("button").forEach(function(b,i){b.classList.toggle("active",i===idx);});}
+  document.querySelector(".navbtn.prev").addEventListener("click",function(){go(idx-1);});
+  document.querySelector(".navbtn.next").addEventListener("click",function(){go(idx+1);});
+  var timer=null;
+  function play(){if(!reduce&&N>1){timer=setInterval(function(){go(idx+1);},4500);}}
+  function stop(){if(timer){clearInterval(timer);timer=null;}}
+  var car=document.getElementById("carousel");
+  car.addEventListener("mouseenter",stop);car.addEventListener("mouseleave",play);
+  var sx=0;
+  car.addEventListener("touchstart",function(e){sx=e.touches[0].clientX;stop();},{passive:true});
+  car.addEventListener("touchend",function(e){var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40){go(dx<0?idx+1:idx-1);}play();},{passive:true});
+  go(0);play();
 
-  var ph = el("promos");
+  /* ===== 品牌文字 ===== */
+  document.getElementById("brandBadge").textContent=d.brand.badge;
+  document.getElementById("brandName").textContent=d.brand.name;
+  document.getElementById("brandSlogan").textContent=d.brand.slogan;
+
+  /* ===== 活动 ===== */
+  var ph=document.getElementById("promos");
   d.promos.forEach(function(p){
-    var div = document.createElement("div");
-    div.className = "promo";
-    div.innerHTML = '<span class="badge"></span><h3></h3><p></p><div class="valid"></div>';
-    div.querySelector(".badge").textContent = p.badge;
-    div.querySelector("h3").textContent = p.title;
-    div.querySelector("p").textContent = p.desc;
-    div.querySelector(".valid").textContent = p.valid;
+    var div=document.createElement("div");div.className="promo";
+    div.innerHTML='<span class="badge"></span><h3></h3><p></p><div class="valid"></div>';
+    div.querySelector(".badge").textContent=p.badge;
+    div.querySelector("h3").textContent=p.title;
+    div.querySelector("p").textContent=p.desc;
+    div.querySelector(".valid").textContent=p.valid;
     ph.appendChild(div);
   });
 
-  var dw = el("dishes");
-  d.dishes.forEach(function(it){
-    var art = document.createElement("article");
-    art.className = "dish";
-    var priceHtml = it.price === "时价" ? '时价' : ('¥'+it.price+' <small>/'+it.unit+'</small>');
-    art.innerHTML = '<div class="ph"><img alt=""></div><div class="info"><h4></h4><p class="desc"></p><div class="price">'+priceHtml+'</div></div>';
-    art.querySelector("img").src = it.image;
-    art.querySelector("img").alt = it.name;
-    art.querySelector("h4").textContent = it.name;
-    art.querySelector(".desc").textContent = it.desc;
-    dw.appendChild(art);
-  });
-
-  el("storeAddress").textContent = d.store.address;
-  el("storePhone").textContent = d.store.phone;
-  el("storePhone").href = "tel:" + d.store.phone.replace(/[^0-9+]/g,"");
-  el("storeHours").textContent = d.store.hours;
-  el("footer").textContent = d.footer;
-
-  // 二维码
-  var box = el("qrcode"), input = el("qrUrl"), dl = el("qrDownload");
-  var current = window.location.href;
-  input.value = current;
-  function makeQR(text){
-    box.innerHTML = "";
-    if(typeof QRCode === "undefined"){box.innerHTML='<span style="font-size:13px;color:#b8862f">二维码库未加载</span>';return null;}
-    new QRCode(box,{width:200,height:200,correctLevel:QRCode.CorrectLevel.M,text:text});
-    return box.querySelector("img");
+  /* ===== 分类 + 菜品 ===== */
+  var tabs=document.getElementById("tabs"), grid=document.getElementById("dishes");
+  var cats=[];d.dishes.forEach(function(it){if(cats.indexOf(it.category)<0)cats.push(it.category);});
+  var tabList=["全部"].concat(cats), activeCat="全部";
+  function dishCard(it){
+    var art=document.createElement("article");art.className="dish";
+    var priceHtml=it.price==="时价"?'时价':('¥'+it.price+' <small>/'+it.unit+'</small>');
+    art.innerHTML='<div class="ph"><img alt=""></div><div class="info"><h4></h4><p class="desc"></p><div class="price">'+priceHtml+'</div></div>';
+    art.querySelector("img").src=it.image;art.querySelector("img").alt=it.name;
+    art.querySelector("h4").textContent=it.name;art.querySelector(".desc").textContent=it.desc;
+    return art;
   }
-  function refresh(){var img=makeQR(input.value.trim()||current);if(img)dl.href=img.src;}
-  input.addEventListener("input",function(){clearTimeout(input._t);input._t=setTimeout(refresh,350);});
-  dl.addEventListener("click",function(){var img=box.querySelector("img");if(img)dl.href=img.src;});
-  refresh();
+  function renderDishes(){
+    grid.innerHTML="";
+    var list=d.dishes.filter(function(it){return activeCat==="全部"||it.category===activeCat;});
+    if(!list.length){var e=document.createElement("div");e.className="empty";e.textContent="该分类暂无菜品";grid.appendChild(e);return;}
+    list.forEach(function(it){grid.appendChild(dishCard(it));});
+  }
+  tabList.forEach(function(c){
+    var b=document.createElement("button");b.textContent=c;
+    b.addEventListener("click",function(){activeCat=c;tabs.querySelectorAll("button").forEach(function(x){x.classList.toggle("active",x===b);});renderDishes();});
+    tabs.appendChild(b);
+  });
+  tabs.querySelector("button").classList.add("active");
+  renderDishes();
+
+  /* ===== 门店 ===== */
+  document.getElementById("storeAddress").textContent=d.store.address;
+  document.getElementById("storePhone").textContent=d.store.phone;
+  document.getElementById("storePhone").href="tel:"+d.store.phone.replace(/[^0-9+]/g,"");
+  document.getElementById("storeHours").textContent=d.store.hours;
+  document.getElementById("footer").textContent=d.footer;
+
+  /* ===== 弱化二维码 ===== */
+  var box=document.getElementById("qrcode"), dl=document.getElementById("qrDownload");
+  if(typeof QRCode!=="undefined"){
+    new QRCode(box,{width:160,height:160,correctLevel:QRCode.CorrectLevel.M,text:window.location.href});
+    var img=box.querySelector("img");if(img)dl.href=img.src;
+  }else{box.textContent="";}
+  dl.addEventListener("click",function(){var im=box.querySelector("img");if(im)dl.href=im.src;});
 })();
 </script>
 </body>
